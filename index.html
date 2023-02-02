@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      function generateXPath(element) {
+        let xpath = [];
+        for (let i = 1; i < element.parentNode.childNodes.length; i++) {
+          if (element.parentNode.childNodes[i] === element) {
+            xpath.push(`*[position() = ${i}]`);
+            break;
+          }
+        }
+        xpath.push(element.tagName);
+        return "//" + xpath.reverse().join("/");
+      }
+  
+      function getElementsXPath(url) {
+        let xpaths = [];
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", url, false);
+        xhr.send();
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(xhr.responseText, "text/html");
+        let elements = doc.querySelectorAll("*");
+        for (let i = 0; i < elements.length; i++) {
+          xpaths.push(generateXPath(elements[i]));
+        }
+        return xpaths;
+      }
+    </script>
+  </head>
+  <body>
+    <input type="text" id="url">
+    <button onclick="getElementsXPath(document.querySelector('#url').value)">
+      Generate XPaths
+    </button>
+    <pre id="result"></pre>
+  </body>
+</html>
